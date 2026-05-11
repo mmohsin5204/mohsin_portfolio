@@ -27,6 +27,15 @@ import {
 
 // --- Constants & Data ---
 
+const NAV_LINKS = [
+  { name: 'Home', href: '#', page: 'home' },
+  { name: 'About', href: '#about', page: 'home' },
+  { name: 'Skills', href: '#skills', page: 'home' },
+  { name: 'Projects', href: '#projects', page: 'home' },
+  { name: 'Education', href: '#education', page: 'home' },
+  { name: 'Contact', href: '#contact', page: 'home' },
+];
+
 const PROJECTS = [
   {
     title: "Modern E-commerce Suite",
@@ -71,9 +80,18 @@ const SKILLS = {
 
 // --- Components ---
 
-const Navbar = ({ currentPage, setCurrentPage }: { currentPage: string, setCurrentPage: (page: string) => void }) => {
+const Navbar = ({ 
+  currentPage, 
+  isMobileMenuOpen, 
+  setIsMobileMenuOpen,
+  onNavClick
+}: { 
+  currentPage: string, 
+  isMobileMenuOpen: boolean,
+  setIsMobileMenuOpen: (open: boolean) => void,
+  onNavClick: (link: any) => void
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,39 +100,6 @@ const Navbar = ({ currentPage, setCurrentPage }: { currentPage: string, setCurre
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMobileMenuOpen]);
-
-  const navLinks = [
-    { name: 'Home', href: '#', page: 'home' },
-    { name: 'About', href: '#about', page: 'home' },
-    { name: 'Skills', href: '#skills', page: 'home' },
-    { name: 'Projects', href: '#projects', page: 'home' },
-    { name: 'Education', href: '#education', page: 'home' },
-    { name: 'Contact', href: '#contact', page: 'home' },
-  ];
-
-  const handleNavClick = (link: any) => {
-    setCurrentPage(link.page);
-    setIsMobileMenuOpen(false);
-    if (link.page === 'home' && link.href !== '#') {
-      setTimeout(() => {
-        const element = document.querySelector(link.href);
-        if (element) element.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
 
   return (
     <nav 
@@ -127,7 +112,7 @@ const Navbar = ({ currentPage, setCurrentPage }: { currentPage: string, setCurre
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="text-xl font-bold tracking-tight flex items-center gap-2 cursor-pointer"
-          onClick={() => setCurrentPage('home')}
+          onClick={() => onNavClick({ page: 'home', href: '#' })}
         >
           <div className="w-8 h-8 bg-brand-accent rounded-lg flex items-center justify-center text-white">
             <Code size={18} />
@@ -136,10 +121,10 @@ const Navbar = ({ currentPage, setCurrentPage }: { currentPage: string, setCurre
         </motion.div>
 
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link, i) => (
+          {NAV_LINKS.map((link, i) => (
             <motion.button
               key={link.name}
-              onClick={() => handleNavClick(link)}
+              onClick={() => onNavClick(link)}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
@@ -170,61 +155,6 @@ const Navbar = ({ currentPage, setCurrentPage }: { currentPage: string, setCurre
           </button>
         </div>
       </div>
-
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 bg-brand-bg z-[100] flex flex-col p-8 md:p-12 overflow-y-auto"
-          >
-            <div className="flex justify-between items-center mb-16">
-              <div className="text-xl font-bold tracking-tight flex items-center gap-2">
-                <div className="w-8 h-8 bg-brand-accent rounded-lg flex items-center justify-center text-white">
-                  <Code size={18} />
-                </div>
-                <span className="text-brand-black">M. MOHSIN</span>
-              </div>
-              <button 
-                onClick={() => setIsMobileMenuOpen(false)} 
-                className="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100 text-brand-black hover:bg-slate-200 transition-colors"
-                aria-label="Close menu"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <div className="flex flex-col gap-4">
-              {navLinks.map((link, i) => (
-                <motion.button
-                  key={link.name}
-                  onClick={() => handleNavClick(link)}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 + 0.1 }}
-                  className="text-4xl font-black text-brand-black text-left hover:text-brand-accent transition-colors flex items-center justify-between group"
-                >
-                  <span>{link.name}</span>
-                  <div className="w-10 h-10 rounded-full border border-brand-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0">
-                    <ExternalLink size={16} />
-                  </div>
-                </motion.button>
-              ))}
-            </div>
-
-            <div className="mt-auto pt-12 border-t border-brand-black/5">
-              <p className="text-xs font-bold uppercase tracking-widest text-brand-gray mb-6">Connect with me</p>
-              <div className="flex gap-6">
-                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-brand-gray hover:bg-brand-accent hover:text-white transition-all"><Instagram size={18} /></a>
-                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-brand-gray hover:bg-brand-accent hover:text-white transition-all"><Twitter size={18} /></a>
-                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-brand-gray hover:bg-brand-accent hover:text-white transition-all"><Facebook size={18} /></a>
-                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-brand-gray hover:bg-brand-accent hover:text-white transition-all"><Youtube size={18} /></a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </nav>
   );
 };
@@ -673,15 +603,48 @@ const Footer = () => {
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
   const [showToast, setShowToast] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`;
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
+  }, [isMobileMenuOpen]);
 
   const handleDownload = () => {
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
 
+  const handleNavClick = (link: any) => {
+    setCurrentPage(link.page);
+    setIsMobileMenuOpen(false);
+    if (link.page === 'home' && link.href !== '#') {
+      setTimeout(() => {
+        const element = document.querySelector(link.href);
+        if (element) element.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="bg-white selection:bg-brand-accent/30 selection:text-brand-black">
-      <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Navbar 
+        currentPage={currentPage} 
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+        onNavClick={handleNavClick}
+      />
       <main>
         <Hero onDownload={handleDownload} />
         <About />
@@ -691,6 +654,61 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 bg-brand-bg z-[100] flex flex-col p-8 md:p-12 overflow-y-auto h-[100dvh]"
+          >
+            <div className="flex justify-between items-center mb-16">
+              <div className="text-xl font-bold tracking-tight flex items-center gap-2">
+                <div className="w-8 h-8 bg-brand-accent rounded-lg flex items-center justify-center text-white">
+                  <Code size={18} />
+                </div>
+                <span className="text-brand-black">M. MOHSIN</span>
+              </div>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100 text-brand-black hover:bg-slate-200 transition-colors"
+                aria-label="Close menu"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="flex flex-col gap-4">
+              {NAV_LINKS.map((link, i) => (
+                <motion.button
+                  key={link.name}
+                  onClick={() => handleNavClick(link)}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 + 0.1 }}
+                  className="text-4xl font-black text-brand-black text-left hover:text-brand-accent transition-colors flex items-center justify-between group"
+                >
+                  <span>{link.name}</span>
+                  <div className="w-10 h-10 rounded-full border border-brand-black/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0">
+                    <ExternalLink size={16} />
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+
+            <div className="mt-auto pt-12 border-t border-brand-black/5">
+              <p className="text-xs font-bold uppercase tracking-widest text-brand-gray mb-6">Connect with me</p>
+              <div className="flex gap-6">
+                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-brand-gray hover:bg-brand-accent hover:text-white transition-all"><Instagram size={18} /></a>
+                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-brand-gray hover:bg-brand-accent hover:text-white transition-all"><Twitter size={18} /></a>
+                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-brand-gray hover:bg-brand-accent hover:text-white transition-all"><Facebook size={18} /></a>
+                <a href="#" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-brand-gray hover:bg-brand-accent hover:text-white transition-all"><Youtube size={18} /></a>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showToast && (
