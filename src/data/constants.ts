@@ -21,8 +21,8 @@ export const NAV_LINKS: NavLink[] = [
 export const PROJECTS = [
   {
     title: "Mantra Clothing",
-    description: "A modern, style-forward fashion store UI crafted in React built to make every browsing moment feel effortless and immersive. Navigate through a polished Home, Shop, Product Details, and Cart — all wrapped in a clean, brand-driven aesthetic.",
-    tech: ["Laravel", "PHP", "MySQL", "Bootstrap"],
+    description: "A full-stack e-commerce platform built with React, Vite, and Tailwind CSS on the frontend, powered by a Node.js and Express backend with a MySQL database. Features include user authentication with JWT, product browsing with filters and search, cart management, wishlist, checkout with COD support, order tracking, admin dashboard with AI-generated product descriptions, and a newsletter subscription system — all deployed live with Railway and Vercel.",
+    tech: ["React", "Node.js", "MySQL", "Tailwind CSS"],
     img: ecommerceImg,
     live: "https://mantra-clothing.vercel.app/",
     github: "#"
